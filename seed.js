@@ -24,7 +24,7 @@ const generateData = async () => {
 
         console.log("Generating data with values between -31 and 35...");
 
-        for (let i = 0; i < 35; i++) { 
+        for (let i = 0; i < 600; i++) { 
             const currentDate = new Date(startDate);
             currentDate.setDate(startDate.getDate() + i);
 
