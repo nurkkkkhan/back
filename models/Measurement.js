@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const MeasurementSchema = new mongoose.Schema({
     timestamp:{
+        type:Date,
         required:true,
         index:true
     },
