@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Measurement = require('./models/Measurement'); 
+
 
 const app = express();
 const PORT = 3000;
@@ -10,7 +12,7 @@ app.use(cors());
 app.use(express.json()); 
 app.use(express.static('public'));
 
-mongoose.connect('mongodb://127.0.0.1:27017/analyticsDB')
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error('MongoDB Connection Error:', err));
 
@@ -71,9 +73,6 @@ app.get('/api/measurements', async (req, res) => {
 });
 
 app.get('/api/measurements/metrics', async (req, res) => {
-    const errors = validateRequest(req.query);
-    if (errors.length > 0) return res.status(400).json({ errors });
-
     const { field, start_date, end_date } = req.query;
 
     try {
@@ -114,33 +113,7 @@ app.get('/api/measurements/metrics', async (req, res) => {
         res.json(metrics[0]);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server Error calculating metrics" });
-    }
-});
-
-app.post('/api/measurements', async (req, res) => {
-    try {
-        console.log("Incoming POST Data:", req.body);
-
-        const { timestamp, field1, field2, field3 } = req.body;
-
-        if (!timestamp || field1 === undefined || field2 === undefined || field3 === undefined) {
-            return res.status(400).json({ message: "Missing required fields (timestamp, field1, field2, field3)." });
-        }
-
-        const newMeasurement = new Measurement({
-            timestamp: new Date(timestamp),
-            field1: Number(field1),
-            field2: Number(field2),
-            field3: Number(field3)
-        });
-
-        await newMeasurement.save();
-        console.log("Saved successfully!");
-        res.status(201).json({ message: "Data added successfully!" });
-    } catch (err) {
-        console.error("Error adding data:", err);
-        res.status(500).json({ message: "Failed to add data." });
+        res.status(500).json({ error: "Metrics Error" });
     }
 });
 
